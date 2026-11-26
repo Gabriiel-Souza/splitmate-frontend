@@ -1,12 +1,17 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.css',
-  templateUrl: './app.html',
+  template: `<h1>{{ mensagem() }}</h1>`,
 })
 export class App {
-  protected readonly title = signal('frontend');
+  private http = inject(HttpClient);
+  mensagem = signal('Carregando...');
+
+  constructor() {
+    this.http
+      .get<{ message: string }>('http://localhost:3000/api/hello')
+      .subscribe((res) => this.mensagem.set(res.message));
+  }
 }
